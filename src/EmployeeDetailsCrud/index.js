@@ -1,4 +1,5 @@
 import React, { useState, useReducer } from "react";
+import { Form, Input, Button } from "antd";
 
 const initialState = [
   {
@@ -23,11 +24,12 @@ const reducer = (state, action) => {
 };
 
 export default function EmployeeDetails() {
+  const [form] = Form.useForm();
   const initialFieldValues = {
     firstName: "",
     lastName: "",
     dob: "",
-    imgPath:""
+    imgPath: "",
   };
   const [state, dispatch] = useReducer(reducer, initialState);
   const [fieldValue, setfieldValue] = useState({ ...initialFieldValues });
@@ -35,58 +37,66 @@ export default function EmployeeDetails() {
     setfieldValue({ ...fieldValue, [name]: value });
   };
   //   Handle the employee add operation
-  const handleAdd = (e) => {
-    e.preventDefault();
-    const { firstName, lastName, dob,imgPath } = fieldValue;
-    const newEmployee = { firstName, lastName, dob,imgPath };
-    dispatch({ type: "ADDING", newEmployee });
+  const handleAdd = () => {
+    form.validateFields().then((allValues) => {
+      dispatch({ type: "ADDING", newEmployee: allValues });
+      form.resetFields();
+    });
+    
+    // e.preventDefault();
+    // const { firstName, lastName, dob, imgPath } = fieldValue;
+    // const newEmployee = { firstName, lastName, dob, imgPath };
+    // dispatch({ type: "ADDING", newEmployee });
     // Reset the form fields
-    setfieldValue({ ...initialFieldValues });
+    // setfieldValue({ ...initialFieldValues });
   };
-  const { firstName, lastName, dob,imgPath } = fieldValue;
+  // const { firstName, lastName, dob, imgPath } = fieldValue;
   return (
     <div>
       <h3>Employee Details</h3>
-      <form onSubmit={(e) => handleAdd(e)}>
-        <div>
-          <input
+      <Form onFinish={(e) => handleAdd(e)} form={form}>
+        <Form.Item name="firstName">
+          <Input
             type="text"
             placeholder="first name"
-            name="firstName"
-            value={firstName}
             onChange={(e) => handleOnChange(e.target)}
           />
-        </div>
+        </Form.Item>
 
-        <div>
-          <input
+        <Form.Item name="lastName">
+          <Input
             type="text"
             placeholder="last name"
             name="lastName"
-            value={lastName}
             onChange={(e) => handleOnChange(e.target)}
           />
-        </div>
-        <div>
-          <input
+        </Form.Item>
+        <Form.Item name="dob">
+          <Input
             type="text"
             placeholder="Date of birth"
             name="dob"
-            value={dob}
             onChange={(e) => handleOnChange(e.target)}
           />
-        </div>
-        <div>
-          <input
+        </Form.Item>
+        <Form.Item name="imgPath">
+          <Input
             type="text"
             placeholder="Image url"
             name="imgPath"
-            value={imgPath}
             onChange={(e) => handleOnChange(e.target)}
           />
-        </div>
-        <input type="submit" value="Add" />
-      </form>
+        </Form.Item>
+        <Form.Item>
+          <Button
+            htmlType="submit"
+            type="primary"
+            className="login-form-button"
+          >
+            Add
+          </Button>
+        </Form.Item>
+      </Form>
       <div>
         <ul>
           {state.map((employee, index) => {
