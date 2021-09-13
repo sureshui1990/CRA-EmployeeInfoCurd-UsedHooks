@@ -13,55 +13,15 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import Ribbon from "antd/lib/badge/Ribbon";
 
-const initialState = [
-  {
-    id: "111",
-    firstName: "Suresh",
-    lastName: "Bethanasamy",
-    dob: "09-05-1990",
-    designation: "Software engineer",
-    imgPath:
-      "https://i.picsum.photos/id/228/200/200.jpg?hmac=o6k6dSrgAeHp1V6rxIjRR2cwEeu4DUs9Z1-sLxrQ878",
-  },
-];
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "ADDING":
-      return [...state, { ...action.newEmployee }];
-
-    case "EDITING_START":
-      state.forEach((employee) => {
-        if (employee.id === action.id) {
-          employee.isEdit = true;
-        }
-      });
-      return [...state];
-    case "EDITING_OFF":
-      state.forEach((employee) => {
-        employee.isEdit = false;
-      });
-      return [...state];
-
-    case "UPDATING":
-      const updateId = state.findIndex((emp) => emp.id === action.info.id);
-      state.splice(updateId, 1, { ...action.info, isEdit: false });
-      return [...state];
-
-    case "REMOVING":
-      const itemId = state.findIndex((emp) => emp.id === action.id);
-      state.splice(itemId, 1);
-      return [...state];
-
-    default:
-      return [...state];
-  }
-};
-
-export default function EmployeeDetails() {
+export default function Listing() {
   const [form] = Form.useForm();
   const [EditEnable, setEditEnable] = useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // Handling the form fields rest
+  const handleReset = () => {
+    form.resetFields();
+  };
   // Handle the employee add operation
   const handleCreate = () => {
     const id = new Date().getMilliseconds();
@@ -69,17 +29,17 @@ export default function EmployeeDetails() {
     setEditEnable(false);
     form.resetFields();
   };
-  // Handling edit flag in store
-  const handleEdit = (employeeDetails) => {
-    setEditEnable(true);
-    dispatch({ type: "EDITING_START", id: employeeDetails.id });
-    form.setFieldsValue(employeeDetails);
-  };
   // Update the employee details
   const handleUpdate = () => {
     dispatch({ type: "UPDATING", info: form.getFieldsValue() });
     handleReset();
     setEditEnable(false);
+  };
+  // Handling edit flag in store
+  const handleEdit = (employeeDetails) => {
+    setEditEnable(true);
+    dispatch({ type: "EDITING_START", id: employeeDetails.id });
+    form.setFieldsValue(employeeDetails);
   };
   // Handling selected employee details to remove
   const handleDelete = (id) => {
@@ -92,10 +52,6 @@ export default function EmployeeDetails() {
       setEditEnable(false);
     }
   };
-  // Handling the form fields rest
-  const handleReset = () => {
-    form.resetFields();
-  };
   // Handle get back to create mode in update face
   const handleBack = () => {
     setEditEnable(false);
@@ -105,7 +61,7 @@ export default function EmployeeDetails() {
 
   return (
     <div>
-      <h3>Employee Info {EditEnable ? "Edit" : "Enroll"}</h3>
+      <h3>Employee Info {EditEnable ? 'Edit' : 'Enroll'}</h3>
       <Form form={form}>
         <Form.Item name="firstName">
           <Input type="text" placeholder="First name" />
